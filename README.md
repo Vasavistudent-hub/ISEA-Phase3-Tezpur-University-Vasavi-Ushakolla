@@ -105,7 +105,3 @@ You can easily trace packet exchanges using **Wireshark** on your loopback or `a
 * **TCP Three-Way Handshake:** Captures `SYN` -> `SYN-ACK` -> `ACK` exchanges during connection setup.
 * **Data Transmission:** Observes standard TCP data transfer payloads on port 5000 when chatting.
 * **Connection Teardown:** Monitors the structured four-way handshake (`FIN-ACK` sequences) when a client closes their GUI window.
-
-```
-
-```
