@@ -1,4 +1,4 @@
-# Multi-Client GUI Chat Application over Mininet (Phase 3)
+# Secure Multi-Client GUI Chat Application over Mininet (Assignment 7 / Phase 3)
 
 **Department:** Computer Science & Engineering, Tezpur University  
 **Submitted By:** Vasavi Ushakolla  
@@ -7,9 +7,11 @@
 ---
 
 ## 1. Project Overview
-This repository contains a multi-client Desktop GUI chat application built using Python's `tkinter` library and standard TCP sockets. The system is designed to run in a simulated network topology inside **Mininet**, allowing multiple concurrent client hosts (`h2`, `h3`, `h4`, `h5`) to securely communicate through a centralized server host (`h1`) over Port 5000.
+This repository contains a secure, multi-client Desktop GUI chat application built using Python's `tkinter` library and standard TCP sockets. The system is designed to run in a simulated network topology inside **Mininet**, allowing multiple concurrent client hosts (`h2`, `h3`, `h4`, `h5`) to securely authenticate and communicate through a centralized server host (`h1`) over Port 5000.
 
 ### Key Features
+* **Authentication & Persistence:** Secure credential storage backed by a JSON user registry.
+* **Security Auditing:** Centralized logging of connection states, authorization statuses, and authentication milestones.
 * **Multi-threaded Client Architecture:** A background receiver thread listens for incoming data without freezing the main GUI event loop.
 * **Smart Stream Parsing:** Resolves standard TCP stream-merging behavior to keep the chat view clean and dynamically update the active user roster sidebar.
 * **Private Messaging:** Route localized messages directly using `/pm <username> <message>`.
@@ -19,10 +21,20 @@ This repository contains a multi-client Desktop GUI chat application built using
 
 ## 2. Directory Structure
 ```text
-├── server.py             # Multi-threaded TCP Chat Server backend
-├── client_gui.py         # Tkinter-based Desktop GUI Client application
-├── ASSIGNMENT REPORT.pdf # Formatted, comprehensive phase 3 lab report
-└── Screenshots/          # Folder containing network capturing and GUI test runs
+├── server.py                                    # Multi-threaded TCP Chat Server backend
+├── client_gui.py                                # Tkinter-based Desktop GUI Client application
+├── users.json                                   # Flat-file database containing user records
+├── security_log.txt                             # Tracks active network events and access metrics
+├── ASSIGNMENT REPORT.pdf                        # Initial framework comprehensive documentation
+├── Assignment_7_Report.pdf                      # Phase 3 technical lab report additions
+├── Handwritten_Reflection_questions_56_Vasavi   # Mandatory qualitative self-reflection document
+└── Screenshots/                                 # Visual network capture sessions and GUI runs
+    ├── Broadcast Messaging.png
+    ├── Login Window Validation.png
+    ├── Private Messaging.png
+    ├── User Joining Notification.png
+    ├── User Leaving Notification & Disconnection.png
+    └── wireshark_capture.png
 
 ```
 
@@ -89,19 +101,23 @@ python3 client_gui.py
 2. Type your message in the chat box and press **Send** to broadcast it to everyone.
 3. Use the sidebar roster list to monitor active online users in real-time.
 4. Send private messages to a specific online user using:
+
 ```text
 /pm <username> <your message>
 
 ```
 
-
-
 ---
 
-## 5. Network Traffic Analysis
+## 5. Network Traffic Analysis & Logs
 
-You can easily trace packet exchanges using **Wireshark** on your loopback or `any` interface:
+You can easily trace packet exchanges and application behaviors via the following mechanisms:
 
-* **TCP Three-Way Handshake:** Captures `SYN` -> `SYN-ACK` -> `ACK` exchanges during connection setup.
-* **Data Transmission:** Observes standard TCP data transfer payloads on port 5000 when chatting.
-* **Connection Teardown:** Monitors the structured four-way handshake (`FIN-ACK` sequences) when a client closes their GUI window.
+* **Security Auditing:** Inspect `security_log.txt` to track real-time access events, successful validation milestones, or flag unauthorized transmission attempts.
+* **TCP Three-Way Handshake:** Capture `SYN` -> `SYN-ACK` -> `ACK` exchanges using **Wireshark** on your loopback or `any` interface during connection setup.
+* **Data Transmission:** Observe standard TCP data transfer payloads on port 5000 when chatting.
+* **Connection Teardown:** Monitor the structured four-way handshake (`FIN-ACK` sequences) when a client closes their GUI window.
+
+```
+
+```
