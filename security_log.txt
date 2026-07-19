@@ -1,0 +1,172 @@
+[2026-07-16 21:50:02] CONNECTION: Incoming connection from 10.0.0.2:54196
+[2026-07-16 21:50:02] AUTH FAILED: Invalid credentials attempted for username 'Vasavi' from 10.0.0.2
+[2026-07-16 21:50:14] CONNECTION: Incoming connection from 10.0.0.2:53468
+[2026-07-16 21:50:14] AUTH FAILED: Invalid credentials attempted for username 'Vasavi' from 10.0.0.2
+[2026-07-16 21:50:29] ERROR: Connection exception occurred with 10.0.0.2. Details: timed out
+[2026-07-16 22:23:43] CONNECTION: Incoming connection from 10.0.0.2:43302
+[2026-07-16 22:23:43] AUTH FAILED: Invalid credentials attempted for username 'Vasavi' from 10.0.0.2
+[2026-07-16 22:52:31] CONNECTION: Incoming connection from 10.0.0.2:34160
+[2026-07-16 22:57:38] CONNECTION: Incoming connection from 10.0.0.2:50860
+[2026-07-16 22:57:38] AUTH FAILED: Invalid credentials attempted for username 'vasavi' from 10.0.0.2
+[2026-07-16 22:57:53] ERROR: Connection exception occurred with 10.0.0.2. Details: timed out
+[2026-07-16 22:59:28] SYSTEM: Server shutting down via keyboard interrupt.
+[2026-07-16 22:59:41] SYSTEM: Created new users.json database.
+[2026-07-16 23:00:09] CONNECTION: Incoming connection from 10.0.0.2:49558
+[2026-07-16 23:04:27] CONNECTION: Incoming connection from 10.0.0.2:59378
+[2026-07-16 23:04:27] AUTH SUCCESS: User 'sahil' authenticated successfully from 10.0.0.2
+[2026-07-16 23:04:59] SESSION: User 'sahil' logged out gracefully.
+[2026-07-17 21:10:22] CONNECTION: Incoming connection from 10.0.0.2:55786
+[2026-07-17 21:12:25] CONNECTION: Incoming connection from 10.0.0.2:41102
+[2026-07-18 15:00:57] SYSTEM: Created new users.json database.
+[2026-07-18 15:01:05] CONNECTION: Incoming connection from 10.0.0.2:36758
+[2026-07-18 15:02:31] CONNECTION: Incoming connection from 10.0.0.2:52786
+[2026-07-18 15:13:00] CONNECTION: Incoming connection from 10.0.0.2:51582
+[2026-07-18 17:03:08] SYSTEM: Created new users.json database.
+[2026-07-18 17:05:40] CONNECTION: Incoming connection from 10.0.0.2:53872
+[2026-07-18 20:26:30] CONNECTION: Incoming connection from 10.0.0.2:39720
+[2026-07-18 20:31:36] CONNECTION: Incoming connection from 10.0.0.2:55574
+[2026-07-18 20:31:36] AUTH SUCCESS: User 'vasavi' authenticated successfully from 10.0.0.2
+[2026-07-18 20:32:36] SESSION: User 'vasavi' disconnected due to inactivity.
+[2026-07-18 20:35:54] CONNECTION: Incoming connection from 10.0.0.2:54402
+[2026-07-18 21:56:39] CONNECTION: Incoming connection from 10.0.0.2:47474
+[2026-07-18 21:56:39] AUTH SUCCESS: User 'vasavi' authenticated successfully from 10.0.0.2
+[2026-07-18 21:57:37] CONNECTION: Incoming connection from 10.0.0.4:51488
+[2026-07-18 21:57:37] AUTH FAILED: Invalid credentials for 'sahil' from 10.0.0.4
+[2026-07-18 21:57:39] SESSION: User 'vasavi' disconnected due to inactivity.
+[2026-07-18 21:58:04] CONNECTION: Incoming connection from 10.0.0.4:32992
+[2026-07-18 21:58:04] AUTH FAILED: Invalid credentials for 'sahil' from 10.0.0.4
+[2026-07-18 21:58:07] CONNECTION: Incoming connection from 10.0.0.4:33006
+[2026-07-18 21:58:07] AUTH FAILED: Invalid credentials for 'sahil' from 10.0.0.4
+[2026-07-18 21:58:29] CONNECTION: Incoming connection from 10.0.0.4:48058
+[2026-07-18 22:03:25] CONNECTION: Incoming connection from 10.0.0.2:50858
+[2026-07-18 22:07:09] SYSTEM: Created new users.json database.
+[2026-07-18 22:07:57] CONNECTION: Incoming connection from 10.0.0.2:55124
+[2026-07-18 22:07:57] AUTH SUCCESS: User 'trithi' authenticated successfully from 10.0.0.2
+[2026-07-18 22:08:55] CONNECTION: Incoming connection from 10.0.0.3:40092
+[2026-07-18 22:08:55] AUTH SUCCESS: User 'vasavi' authenticated successfully from 10.0.0.3
+[2026-07-18 22:08:57] SESSION: User 'trithi' disconnected due to inactivity.
+[2026-07-18 22:09:28] CONNECTION: Incoming connection from 10.0.0.2:46812
+[2026-07-18 22:09:28] AUTH SUCCESS: User 'trithi' authenticated successfully from 10.0.0.2
+[2026-07-18 22:10:28] SESSION: User 'trithi' disconnected due to inactivity.
+[2026-07-18 22:10:56] SESSION: User 'vasavi' disconnected due to inactivity.
+[2026-07-18 22:16:02] CONNECTION: Incoming connection from 10.0.0.2:59940
+[2026-07-18 22:16:02] AUTH SUCCESS: User 'vasavi' authenticated successfully from 10.0.0.2
+[2026-07-18 22:16:54] CONNECTION: Incoming connection from 10.0.0.3:52438
+[2026-07-18 22:16:54] AUTH FAILED: Invalid credentials for 'sahil' from 10.0.0.3
+[2026-07-18 22:16:57] CONNECTION: Incoming connection from 10.0.0.3:52454
+[2026-07-18 22:16:57] AUTH FAILED: Invalid credentials for 'sahil' from 10.0.0.3
+[2026-07-18 22:17:45] CONNECTION: Incoming connection from 10.0.0.3:41328
+[2026-07-18 22:17:45] AUTH SUCCESS: User 'sahil' authenticated successfully from 10.0.0.3
+[2026-07-18 22:21:02] SESSION: User 'vasavi' disconnected due to inactivity.
+[2026-07-18 22:23:38] SESSION: User 'sahil' disconnected due to inactivity.
+[2026-07-18 22:27:31] CONNECTION: Incoming connection from 10.0.0.3:47362
+[2026-07-18 22:27:31] AUTH SUCCESS: User 'vasavi' authenticated successfully from 10.0.0.3
+[2026-07-18 22:28:36] SESSION: User 'vasavi' logged out gracefully.
+[2026-07-18 22:29:14] CONNECTION: Incoming connection from 10.0.0.3:53118
+[2026-07-18 22:29:14] AUTH SUCCESS: User 'vasavi' authenticated successfully from 10.0.0.3
+[2026-07-18 22:30:17] SESSION: User 'vasavi' logged out gracefully.
+[2026-07-18 22:31:43] CONNECTION: Incoming connection from 10.0.0.2:33378
+[2026-07-18 22:31:43] AUTH SUCCESS: User 'vasavi' authenticated successfully from 10.0.0.2
+[2026-07-18 22:36:43] SESSION: User 'vasavi' disconnected due to inactivity.
+[2026-07-18 22:37:00] CONNECTION: Incoming connection from 10.0.0.3:41204
+[2026-07-18 22:37:00] AUTH SUCCESS: User 'sahil' authenticated successfully from 10.0.0.3
+[2026-07-18 22:37:41] CONNECTION: Incoming connection from 10.0.0.2:43058
+[2026-07-18 22:37:41] AUTH SUCCESS: User 'vasavi' authenticated successfully from 10.0.0.2
+[2026-07-18 22:42:41] SESSION: User 'vasavi' disconnected due to inactivity.
+[2026-07-18 22:44:51] CONNECTION: Incoming connection from 10.0.0.2:50828
+[2026-07-18 22:44:51] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 22:44:55] CONNECTION: Incoming connection from 10.0.0.2:40772
+[2026-07-18 22:44:55] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 22:44:58] CONNECTION: Incoming connection from 10.0.0.2:40782
+[2026-07-18 22:44:58] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 22:45:02] CONNECTION: Incoming connection from 10.0.0.2:40798
+[2026-07-18 22:45:02] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 22:45:04] CONNECTION: Incoming connection from 10.0.0.2:50784
+[2026-07-18 22:45:04] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 22:50:53] CONNECTION: Incoming connection from 10.0.0.2:51076
+[2026-07-18 22:50:53] AUTH FAILED: Invalid credentials for 'trithi' from 10.0.0.2
+[2026-07-18 22:50:56] CONNECTION: Incoming connection from 10.0.0.2:51080
+[2026-07-18 22:50:56] AUTH FAILED: Invalid credentials for 'trithi' from 10.0.0.2
+[2026-07-18 22:50:59] CONNECTION: Incoming connection from 10.0.0.2:51084
+[2026-07-18 22:50:59] AUTH FAILED: Invalid credentials for 'trithi' from 10.0.0.2
+[2026-07-18 23:06:58] SYSTEM: Created new users.json database.
+[2026-07-18 23:08:08] CONNECTION: Incoming connection from 10.0.0.2:53214
+[2026-07-18 23:08:08] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 23:08:12] CONNECTION: Incoming connection from 10.0.0.2:59674
+[2026-07-18 23:08:12] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 23:08:26] CONNECTION: Incoming connection from 10.0.0.2:57844
+[2026-07-18 23:08:26] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 23:40:08] CONNECTION: Incoming connection from 10.0.0.2:37754
+[2026-07-18 23:40:08] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 23:40:11] CONNECTION: Incoming connection from 10.0.0.2:37770
+[2026-07-18 23:40:11] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 23:40:14] CONNECTION: Incoming connection from 10.0.0.2:43882
+[2026-07-18 23:40:14] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 23:57:07] CONNECTION: Incoming connection from 10.0.0.2:33646
+[2026-07-18 23:57:07] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 23:57:14] CONNECTION: Incoming connection from 10.0.0.2:49578
+[2026-07-18 23:57:14] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-18 23:57:17] CONNECTION: Incoming connection from 10.0.0.2:49594
+[2026-07-18 23:57:17] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:10:12] CONNECTION: Incoming connection from 10.0.0.2:46822
+[2026-07-19 00:10:12] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:10:17] CONNECTION: Incoming connection from 10.0.0.2:46836
+[2026-07-19 00:10:17] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:10:19] CONNECTION: Incoming connection from 10.0.0.2:46850
+[2026-07-19 00:10:19] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:20:35] CONNECTION: Incoming connection from 10.0.0.2:52772
+[2026-07-19 00:20:35] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:26:07] CONNECTION: Incoming connection from 10.0.0.2:50770
+[2026-07-19 00:26:07] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:26:13] CONNECTION: Incoming connection from 10.0.0.2:54900
+[2026-07-19 00:26:13] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:26:18] CONNECTION: Incoming connection from 10.0.0.2:54904
+[2026-07-19 00:26:18] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:39:28] CONNECTION: Incoming connection from 10.0.0.2:41196
+[2026-07-19 00:39:28] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:39:58] CONNECTION: Incoming connection from 10.0.0.2:58194
+[2026-07-19 00:39:58] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 00:40:15] CONNECTION: Incoming connection from 10.0.0.2:38000
+[2026-07-19 00:40:15] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 17:13:58] CONNECTION: Incoming connection from 10.0.0.2:42756
+[2026-07-19 17:13:58] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 17:14:12] CONNECTION: Incoming connection from 10.0.0.2:36764
+[2026-07-19 17:14:12] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 17:14:36] CONNECTION: Incoming connection from 10.0.0.2:46080
+[2026-07-19 17:14:36] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 18:42:05] CONNECTION: Incoming connection from 10.0.0.2:48716
+[2026-07-19 18:42:05] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 18:45:22] CONNECTION: Incoming connection from 10.0.0.2:40028
+[2026-07-19 18:45:22] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 18:45:49] CONNECTION: Incoming connection from 10.0.0.2:35576
+[2026-07-19 18:45:49] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 18:51:04] CONNECTION: Incoming connection from 10.0.0.2:54622
+[2026-07-19 18:51:04] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 18:51:31] CONNECTION: Incoming connection from 10.0.0.2:52922
+[2026-07-19 18:51:31] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 18:51:46] CONNECTION: Incoming connection from 10.0.0.2:50346
+[2026-07-19 18:51:46] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:03:41] CONNECTION: Incoming connection from 10.0.0.2:39424
+[2026-07-19 19:03:41] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:03:58] CONNECTION: Incoming connection from 10.0.0.2:47686
+[2026-07-19 19:03:58] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:04:15] CONNECTION: Incoming connection from 10.0.0.2:39470
+[2026-07-19 19:04:15] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:18:16] CONNECTION: Incoming connection from 10.0.0.2:44844
+[2026-07-19 19:18:16] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:18:32] CONNECTION: Incoming connection from 10.0.0.2:45052
+[2026-07-19 19:18:32] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:18:47] CONNECTION: Incoming connection from 10.0.0.2:52466
+[2026-07-19 19:18:47] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:18:47] SECURITY ALERT: IP 10.0.0.2 blocked due to excessive failed login attempts.
+[2026-07-19 19:19:23] CONNECTION: Incoming connection from 10.0.0.2:50048
+[2026-07-19 19:19:23] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:19:43] CONNECTION: Incoming connection from 10.0.0.2:53260
+[2026-07-19 19:19:43] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:21:21] CONNECTION: Incoming connection from 10.0.0.2:41246
+[2026-07-19 19:21:21] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:21:41] CONNECTION: Incoming connection from 10.0.0.2:50552
+[2026-07-19 19:21:41] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:21:59] CONNECTION: Incoming connection from 10.0.0.2:60606
+[2026-07-19 19:21:59] AUTH FAILED: Invalid credentials for 'vasavi' from 10.0.0.2
+[2026-07-19 19:21:59] SECURITY ALERT: IP 10.0.0.2 blocked due to excessive failed login attempts.

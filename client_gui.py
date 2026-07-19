@@ -3,178 +3,185 @@ import threading
 import tkinter as tk
 from tkinter import messagebox, scrolledtext
 
-class ChatClientGUI:
+DEFAULT_HOST = '127.0.0.1'
+DEFAULT_PORT = 5000
+MAX_MSG_SIZE = 1024
 
+class SecureChatClient:
     def __init__(self, root):
         self.root = root
-        self.root.title("ISEA Multi-Client Chat Application")
-        self.root.geometry("650x480")
+        self.root.title("Secure TCP Chat Client")
+        self.root.geometry("450x550")
+        self.root.configure(bg="#f0f2f5")
 
         self.client_socket = None
         self.username = ""
+        self.running = False
 
-        self.login_frame = tk.Frame(self.root)
-        self.login_frame.pack(pady=60)
+        self.container = tk.Frame(self.root, bg="#f0f2f5")
+        self.container.pack(fill="both", expand=True)
 
-        self.lbl_title = tk.Label(
-            self.login_frame,
-            text="Network Chat Login",
-            font=("Arial", 14, "bold"),
-        )
-        self.lbl_title.pack(pady=10)
+        self.show_login_screen()
 
-        self.lbl_user = tk.Label(self.login_frame, text="Enter Username:")
-        self.lbl_user.pack()
+    def show_login_screen(self):
+        self.login_frame = tk.Frame(self.container, bg="#ffffff", bd=2, relief="groove")
+        self.login_frame.place(relx=0.5, rely=0.5, anchor="center", width=350, height=400)
 
-        self.entry_username = tk.Entry(self.login_frame, font=("Arial", 11))
-        self.entry_username.pack(pady=5)
-        self.entry_username.bind(
-            "<Return>", lambda event: self.connect_to_server()
-        )
+        lbl_title = tk.Label(self.login_frame, text="Secure Workspace", font=("Helvetica", 16, "bold"), bg="#ffffff", fg="#1877f2")
+        lbl_title.pack(pady=20)
 
-        self.btn_connect = tk.Button(
-            self.login_frame,
-            text="Connect",
-            command=self.connect_to_server,
-            bg="#2ecc71",
-            fg="white",
-            font=("Arial", 11, "bold"),
-        )
-        self.btn_connect.pack(pady=15)
+        tk.Label(self.login_frame, text="Server IP Address:", font=("Helvetica", 10), bg="#ffffff").pack(anchor="w", padx=30)
+        self.ent_host = tk.Entry(self.login_frame, font=("Helvetica", 11), bg="#f0f2f5", bd=0)
+        self.ent_host.insert(0, DEFAULT_HOST)
+        self.ent_host.pack(fill="x", padx=30, pady=(5, 15), ipady=5)
 
-        self.chat_frame = tk.Frame(self.root)
+        tk.Label(self.login_frame, text="Username:", font=("Helvetica", 10), bg="#ffffff").pack(anchor="w", padx=30)
+        self.ent_username = tk.Entry(self.login_frame, font=("Helvetica", 11), bg="#f0f2f5", bd=0)
+        self.ent_username.pack(fill="x", padx=30, pady=(5, 15), ipady=5)
 
-    def connect_to_server(self):
-        self.username = self.entry_username.get().strip()
+        tk.Label(self.login_frame, text="Password:", font=("Helvetica", 10), bg="#ffffff").pack(anchor="w", padx=30)
+        self.ent_password = tk.Entry(self.login_frame, show="•", font=("Helvetica", 11), bg="#f0f2f5", bd=0)
+        self.ent_password.pack(fill="x", padx=30, pady=(5, 25), ipady=5)
 
-        if not self.username:
-            messagebox.showerror("Validation Error", "Username cannot be empty!")
+        btn_login = tk.Button(self.login_frame, text="Log In", font=("Helvetica", 11, "bold"), bg="#1877f2", fg="#ffffff", activebackground="#166fe5", activeforeground="#ffffff", bd=0, command=self.attempt_login)
+        btn_login.pack(fill="x", padx=30, ipady=8)
+
+    def attempt_login(self):
+        host = self.ent_host.get().strip()
+        username = self.ent_username.get().strip()
+        password = self.ent_password.get().strip()
+
+        if not host or not username or not password:
+            messagebox.showwarning("Missing Fields", "Please complete all registration fields.")
             return
 
         try:
-            self.client_socket = socket.socket(
-                socket.AF_INET, socket.SOCK_STREAM
-            )
-            self.client_socket.connect(("10.0.0.1", 5000))
-            self.client_socket.send(self.username.encode("utf-8"))
-
-            self.login_frame.pack_forget()
-            self.setup_chat_window()
-
-            receive_thread = threading.Thread(target=self.receive_messages)
-            receive_thread.daemon = True
-            receive_thread.start()
-
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.settimeout(5.0)
+            self.client_socket.connect((host, DEFAULT_PORT))
+            self.client_socket.settimeout(2.0)  
         except Exception as e:
-            messagebox.showerror(
-                "Connection Error", f"Could not connect to server: {e}"
-            )
+            messagebox.showerror("Connection Failed", f"Could not connect to {host}:{DEFAULT_PORT}.\nError: {e}")
+            return
 
-    def setup_chat_window(self):
-        self.chat_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        auth_payload = f"AUTH {username} {password}"
+        try:
+            self.client_socket.sendall(auth_payload.encode('utf-8'))
+            response = self.client_socket.recv(MAX_MSG_SIZE).decode('utf-8').strip()
+            
+            
+            self.client_socket.settimeout(None)
+            
+            if response == "AUTH_SUCCESS":
+                self.username = username
+                self.running = True
+                self.login_frame.destroy()
+                self.show_chat_screen()
+                threading.Thread(target=self.receive_messages, daemon=True).start()
+            elif "Too many failed login attempts" in response or "blocked" in response:
+                messagebox.showerror("Security Alert", response)
+                self.clean_disconnect()
+            else:
+                messagebox.showerror("Access Denied", response)
+                self.clean_disconnect()
+                
+        except (socket.timeout, socket.error, BrokenPipeError, ConnectionResetError):
+            messagebox.showerror("Security Alert", "ERROR: Too many failed login attempts. IP blocked.")
+            self.clean_disconnect()
 
-        self.chat_frame.columnconfigure(0, weight=4)
-        self.chat_frame.columnconfigure(1, weight=1)
-        self.chat_frame.rowconfigure(0, weight=1)
+    def show_chat_screen(self):
+        self.chat_frame = tk.Frame(self.container, bg="#f0f2f5")
+        self.chat_frame.pack(fill="both", expand=True, padx=15, pady=15)
 
-        self.chat_area = scrolledtext.ScrolledText(
-            self.chat_frame, wrap=tk.WORD, state=tk.DISABLED
-        )
-        self.chat_area.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+        header_frame = tk.Frame(self.chat_frame, bg="#f0f2f5")
+        header_frame.pack(fill="x", pady=(0, 10))
 
-        self.user_listbox = tk.Listbox(self.chat_frame, font=("Arial", 10))
-        self.user_listbox.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
+        lbl_welcome = tk.Label(header_frame, text=f"Logged in as: {self.username}", font=("Helvetica", 11, "bold"), bg="#f0f2f5", fg="#333333")
+        lbl_welcome.pack(side="left")
 
-        input_frame = tk.Frame(self.chat_frame)
-        input_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=10)
+        btn_logout = tk.Button(header_frame, text="Log Out", font=("Helvetica", 9, "bold"), bg="#e4e6eb", fg="#050505", bd=0, padx=10, command=self.logout)
+        btn_logout.pack(side="right")
 
-        self.entry_message = tk.Entry(input_frame, font=("Arial", 11))
-        self.entry_message.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
-        self.entry_message.bind("<Return>", lambda event: self.send_message())
+        self.chat_display = scrolledtext.ScrolledText(self.chat_frame, wrap=tk.WORD, font=("Helvetica", 10), state="disabled", bg="#ffffff", bd=0)
+        self.chat_display.pack(fill="both", expand=True, pady=(0, 10))
 
-        self.btn_send = tk.Button(
-            input_frame,
-            text="Send",
-            command=self.send_message,
-            width=10,
-            bg="#3498db",
-            fg="white",
-        )
-        self.btn_send.pack(side=tk.LEFT, padx=5)
+        input_frame = tk.Frame(self.chat_frame, bg="#f0f2f5")
+        input_frame.pack(fill="x")
 
-        self.btn_disconnect = tk.Button(
-            input_frame,
-            text="Disconnect",
-            command=self.disconnect_from_server,
-            bg="#e74c3c",
-            fg="white",
-        )
-        self.btn_disconnect.pack(side=tk.RIGHT, padx=5)
+        self.ent_msg = tk.Entry(input_frame, font=("Helvetica", 11), bg="#ffffff", bd=0)
+        self.ent_msg.pack(side="left", fill="x", expand=True, ipady=8, padx=(0, 10))
+        self.ent_msg.bind("<Return>", lambda event: self.send_message())
 
-        self.lbl_status = tk.Label(
-            self.chat_frame,
-            text=f"Status: Connected as {self.username}",
-            fg="green",
-            anchor="w",
-        )
-        self.lbl_status.grid(row=2, column=0, columnspan=2, sticky="ew")
+        btn_send = tk.Button(input_frame, text="Send", font=("Helvetica", 10, "bold"), bg="#1877f2", fg="#ffffff", bd=0, padx=15, command=self.send_message)
+        btn_send.pack(side="right", ipady=6)
 
     def send_message(self):
-        msg = self.entry_message.get().strip()
-        if msg:
-            try:
-                self.client_socket.send(msg.encode("utf-8"))
-                self.entry_message.delete(0, tk.END)
-            except Exception:
-                self.append_chat_log("[System Error: Server connection lost.]")
+        msg = self.ent_msg.get().strip()
+        if not msg:
+            return
+
+        if len(msg.encode('utf-8')) > MAX_MSG_SIZE:
+            messagebox.showwarning("Oversized Message", f"Messages cannot exceed {MAX_MSG_SIZE} bytes.")
+            return
+
+        try:
+            self.client_socket.sendall(msg.encode('utf-8'))
+            self.append_to_display(f"[You]: {msg}")
+            self.ent_msg.delete(0, tk.END)
+        except Exception as e:
+            self.append_to_display(f"[SYSTEM ERROR]: Failed to deliver message. {e}")
 
     def receive_messages(self):
-        while True:
+        while self.running:
             try:
-                data = self.client_socket.recv(1024).decode("utf-8")
+                data = self.client_socket.recv(MAX_MSG_SIZE).decode('utf-8')
                 if not data:
                     break
+                
+                if "ERROR: Session timed out" in data:
+                    self.append_to_display("\n[SYSTEM]: You were disconnected due to inactivity.")
+                    messagebox.showwarning("Session Timeout", "Your session has expired due to inactivity.")
+                    break
 
-                if "USERS:" in data:
-                    parts = data.split("USERS:", 1)
-                    chat_part = parts[0].strip()
-                    users_part = parts[1].strip()
-
-                    if chat_part:
-                        self.append_chat_log(chat_part)
-
-                    active_roster = users_part.split(",")
-                    self.refresh_roster_sidebar(active_roster)
-                else:
-                    self.append_chat_log(data)
-
+                self.append_to_display(data.strip())
             except Exception:
                 break
 
-        self.append_chat_log("[Disconnected from Session]")
+        self.clean_disconnect()
 
-    def append_chat_log(self, text):
-        self.chat_area.config(state=tk.NORMAL)
-        self.chat_area.insert(tk.END, text + "\n")
-        self.chat_area.see(tk.END)
-        self.chat_area.config(state=tk.DISABLED)
+    def append_to_display(self, message):
+        if self.chat_display.winfo_exists():
+            self.chat_display.configure(state="normal")
+            self.chat_display.insert(tk.END, message + "\n")
+            self.chat_display.configure(state="disabled")
+            self.chat_display.see(tk.END)
 
-    def refresh_roster_sidebar(self, user_list):
-        self.user_listbox.delete(0, tk.END)
-        for user in user_list:
-            if user.strip():
-                self.user_listbox.insert(tk.END, user.strip())
+    def logout(self):
+        if self.client_socket:
+            try:
+                self.client_socket.sendall(b"LOGOUT")
+            except Exception:
+                pass
+        self.clean_disconnect()
 
-    def disconnect_from_server(self):
+    def clean_disconnect(self):
+        self.running = False
         if self.client_socket:
             try:
                 self.client_socket.close()
-            except:
+            except Exception:
                 pass
-        self.root.quit()
+            self.client_socket = None
 
+        self.root.after(0, self.reset_to_login)
+
+    def reset_to_login(self):
+        if hasattr(self, 'chat_frame') and self.chat_frame.winfo_exists():
+            self.chat_frame.destroy()
+        self.show_login_screen()
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = ChatClientGUI(root)
+    app = SecureChatClient(root)
+    root.protocol("WM_DELETE_WINDOW", lambda: (app.logout(), root.destroy()))
     root.mainloop()

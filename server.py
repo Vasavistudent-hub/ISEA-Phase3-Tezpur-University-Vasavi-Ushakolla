@@ -1,174 +1,314 @@
 import socket
 import threading
+import json
+import hashlib
+import time
+import os
+
+PORT = 5000
+MAX_MSG_SIZE = 1024
+TIMEOUT_LIMIT = 300.0
+BLOCK_DURATION = 30.0
+MAX_FAILED_ATTEMPTS = 3
+
+active_clients = {}
+active_usernames = set()
+failed_login_attempts = {}
+blocked_ips = {}
 
 
-HOST = '0.0.0.0'  
-PORT = 5000       
+lock = threading.RLock()
 
-clients = {}
+def log_event(event_text):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    log_line = f"[{timestamp}] {event_text}\n"
+    with lock:
+        with open("security_log.txt", "a") as f:
+            f.write(log_line)
 
-clients_lock = threading.Lock()
+def load_user_database():
+    if not os.path.exists("users.json"):
+        default_users = {
+            "vasavi": hashlib.sha256("sahil1212".encode()).hexdigest(),
+            "sahil": hashlib.sha256("vasu1608".encode()).hexdigest(),
+            "trithi": hashlib.sha256("us1612".encode()).hexdigest()
+        }
+        with open("users.json", "w") as f:
+            json.dump(default_users, f, indent=4)
+        log_event("SYSTEM: Created new users.json database.")
+    
+    with open("users.json", "r") as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
+
+def save_user_database(database):
+    with open("users.json", "w") as f:
+        json.dump(database, f, indent=4)
+
+user_db = load_user_database()
+
+def is_blocked(ip):
+    with lock:
+        if ip in blocked_ips:
+            if time.time() - blocked_ips[ip] < BLOCK_DURATION:
+                return True
+            else:
+                del blocked_ips[ip]
+                failed_login_attempts[ip] = 0
+        return False
+
+def record_failed_login(ip):
+    with lock:
+        failed_login_attempts[ip] = failed_login_attempts.get(ip, 0) + 1
+        if failed_login_attempts[ip] >= MAX_FAILED_ATTEMPTS:
+            blocked_ips[ip] = time.time()
+            log_event(f"SECURITY ALERT: IP {ip} blocked due to excessive failed login attempts.")
+            return True
+        return False
 
 def broadcast(message, sender_socket=None):
-    
-    encoded_message = message.encode('utf-8')
-    with clients_lock:
-        for client in list(clients.keys()):
-            if client != sender_socket:  
+    with lock:
+        for client_sock in active_clients:
+            if client_sock != sender_socket:
                 try:
-                    client.send(encoded_message)
+                    client_sock.sendall(message.encode('utf-8'))
                 except Exception:
-                    
-                    remove_client(client)
+                    pass
 
-def broadcast_user_list():
+def handle_client(client_socket, client_address):
+    global user_db
+    ip, port = client_address
+    log_event(f"CONNECTION: Incoming connection from {ip}:{port}")
     
-    with clients_lock:
-        active_usernames = list(clients.values())
-    
-    
-    user_payload = "USERS:" + ",".join(active_usernames)
-    encoded_payload = user_payload.encode('utf-8')
-    
-    with clients_lock:
-        for client in list(clients.keys()):
-            try:
-                client.send(encoded_payload)
-            except Exception:
-                remove_client(client)
-
-def handle_private_message(sender_socket, sender_name, message_text):
-    
-    parts = message_text.split(' ', 2)
-    if len(parts) < 3:
+    if is_blocked(ip):
         try:
-            sender_socket.send("[System Error]: Invalid private message format. Use /pm <username> <message>".encode('utf-8'))
-        except:
-            pass
-        return
-
-    recipient_name = parts[1].strip()
-    private_msg = parts[2].strip()
-
-    recipient_socket = None
-    with clients_lock:
-        for sock, name in clients.items():
-            if name.lower() == recipient_name.lower():
-                recipient_socket = sock
-                break
-
-    if recipient_socket:
-        formatted_pm = f"[Private from {sender_name}]: {private_msg}"
-        try:
-            recipient_socket.send(formatted_pm.encode('utf-8'))
-            
-            sender_socket.send(f"[Private to {recipient_name}]: {private_msg}".encode('utf-8'))
-        except Exception:
-            remove_client(recipient_socket)
-    else:
-        try:
-            sender_socket.send(f"[System Error]: User '{recipient_name}' is not online.".encode('utf-8'))
-        except:
-            pass
-
-def remove_client(client_socket):
-   
-    username = None
-    with clients_lock:
-        if client_socket in clients:
-            username = clients[client_socket]
-            del clients[client_socket]
-            try:
-                client_socket.close()
-            except:
-                pass
-                
-    if username:
-        print(f"[-] Connection closed with: {username}")
-        
-        broadcast(f"[System]: {username} has left the chat.")
-        
-        broadcast_user_list()
-
-def handle_client(client_socket, addr):
-   
-    username = ""
-    try:
-        
-        username = client_socket.recv(1024).decode('utf-8').strip()
-        
-        if not username:
+            client_socket.sendall(b"ERROR: IP temporarily blocked due to multiple failed login attempts.")
+            client_socket.shutdown(socket.SHUT_WR)
+            time.sleep(0.2)
             client_socket.close()
-            return
-            
-        with clients_lock:
-            
-            if username in clients.values():
-                username = f"{username}_{addr[1]}"
-            clients[client_socket] = username
-
-        print(f"[+] {username} connected from {addr[0]}:{addr[1]}")
-        
-        
-        broadcast(f"[System]: {username} has joined the chat room.")
-        
-        
-        broadcast_user_list()
-
-        
-        while True:
-            data = client_socket.recv(1024).decode('utf-8')
-            if not data:
-                break
-            
-            message = data.strip()
-            
-            
-            if message.startswith("/pm "):
-                handle_private_message(client_socket, username, message)
-            else:
-                
-                formatted_message = f"<{username}>: {message}"
-                broadcast(formatted_message, sender_socket=client_socket)
-                
-                client_socket.send(formatted_message.encode('utf-8'))
-
-    except ConnectionResetError:
-        pass
-    except Exception as e:
-        print(f"[Error] Handling client {username}: {e}")
-    finally:
-        remove_client(client_socket)
-
-def start_server():
-   
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
-    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    
-    try:
-        server_socket.bind((HOST, PORT))
-        server_socket.listen(10)
-        print(f"[*] Chat Server actively listening on {HOST}:{PORT}...")
-    except Exception as e:
-        print(f"[Critical Error] Bind failed: {e}")
+        except Exception:
+            pass
         return
 
-    while True:
-        try:
-            client_socket, addr = server_socket.accept()
-            
-            client_thread = threading.Thread(target=handle_client, args=(client_socket, addr))
-            client_thread.daemon = True
-            client_thread.start()
-        except KeyboardInterrupt:
-            print("\n[*] Server shutting down.")
-            break
-        except Exception as e:
-            print(f"[Error] Accepting connections: {e}")
-            break
+    authenticated = False
+    username = ""
+    last_active = time.time()
+    
+    try:
+        while not authenticated:
+            if is_blocked(ip):
+                try:
+                    client_socket.sendall(b"ERROR: IP temporarily blocked.")
+                    client_socket.shutdown(socket.SHUT_WR)
+                except Exception:
+                    pass
+                time.sleep(0.2)
+                client_socket.close()
+                return
 
-    server_socket.close()
+            client_socket.settimeout(TIMEOUT_LIMIT)
+            data = client_socket.recv(MAX_MSG_SIZE).decode('utf-8')
+            if not data:
+                client_socket.close()
+                return
+
+            data = data.strip()
+            if "AUTH " in data and not data.startswith("AUTH "):
+                data = data[data.find("AUTH "):]
+
+            if not data.startswith("AUTH "):
+                log_event(f"PROTOCOL VIOLATION: Malformed authentication string from {ip}")
+                if record_failed_login(ip):
+                    try:
+                        client_socket.sendall(b"ERROR: Too many failed login attempts. IP blocked.")
+                        client_socket.shutdown(socket.SHUT_WR)
+                    except Exception:
+                        pass
+                    time.sleep(0.5)
+                    client_socket.close()
+                    return
+                else:
+                    client_socket.sendall(b"ERROR: Invalid protocol. Please authenticate first.")
+                continue
+
+            parts = data.split(maxsplit=2)
+            if len(parts) < 3:
+                if record_failed_login(ip):
+                    try:
+                        client_socket.sendall(b"ERROR: Too many failed login attempts. IP blocked.")
+                        client_socket.shutdown(socket.SHUT_WR)
+                    except Exception:
+                        pass
+                    time.sleep(0.5)
+                    client_socket.close()
+                    return
+                else:
+                    client_socket.sendall(b"ERROR: Invalid credentials format. Usage: AUTH <username> <password>")
+                continue
+
+            _, input_username, input_password = parts
+            input_username = input_username.strip()
+            input_password = input_password.strip()
+
+            if not input_username.isalnum() or len(input_username) < 3 or len(input_username) > 15:
+                if record_failed_login(ip):
+                    try:
+                        client_socket.sendall(b"ERROR: Too many failed login attempts. IP blocked.")
+                        client_socket.shutdown(socket.SHUT_WR)
+                    except Exception:
+                        pass
+                    time.sleep(0.5)
+                    client_socket.close()
+                    return
+                else:
+                    client_socket.sendall(b"ERROR: Invalid username syntax. Must be alphanumeric and 3-15 chars.")
+                continue
+
+            if not input_password:
+                if record_failed_login(ip):
+                    try:
+                        client_socket.sendall(b"ERROR: Too many failed login attempts. IP blocked.")
+                        client_socket.shutdown(socket.SHUT_WR)
+                    except Exception:
+                        pass
+                    time.sleep(0.5)
+                    client_socket.close()
+                    return
+                else:
+                    client_socket.sendall(b"ERROR: Password cannot be empty.")
+                continue
+
+            hashed_input = hashlib.sha256(input_password.encode()).hexdigest()
+
+            with lock:
+                if input_username in active_usernames:
+                    client_socket.sendall(b"ERROR: This account is already logged in.")
+                    log_event(f"AUTH FAILED: Duplicate login prevention for '{input_username}' from {ip}")
+                    continue
+
+            with lock:
+                if input_username not in user_db:
+                    user_db[input_username] = hashed_input
+                    save_user_database(user_db)
+                    log_event(f"REGISTRATION: Dynamically registered new user '{input_username}' from {ip}")
+
+            if user_db[input_username] == hashed_input:
+                authenticated = True
+                username = input_username
+                with lock:
+                    active_clients[client_socket] = username
+                    active_usernames.add(username)
+                    if ip in failed_login_attempts:
+                        failed_login_attempts[ip] = 0
+                
+                client_socket.sendall(b"AUTH_SUCCESS")
+                log_event(f"AUTH SUCCESS: User '{username}' authenticated successfully from {ip}")
+                broadcast(f"\n[SYSTEM]: {username} has joined the workspace.", client_socket)
+            else:
+                log_event(f"AUTH FAILED: Invalid credentials for '{input_username}' from {ip}")
+                
+                if record_failed_login(ip):
+                    try:
+                        
+                        client_socket.sendall(b"ERROR: Too many failed login attempts. IP blocked.")
+                        client_socket.shutdown(socket.SHUT_WR)
+                    except Exception:
+                        pass
+                    time.sleep(0.5)
+                    client_socket.close()
+                    return
+                else:
+                    client_socket.sendall(b"ERROR: Invalid username or password.")
+
+        while authenticated:
+            try:
+                client_socket.settimeout(1.0)
+                data = client_socket.recv(MAX_MSG_SIZE).decode('utf-8')
+                if not data:
+                    break
+                
+                last_active = time.time()
+                message = data.strip()
+                
+                if message == "LOGOUT":
+                    log_event(f"SESSION: User '{username}' logged out gracefully.")
+                    break
+                
+                if len(message.encode('utf-8')) > MAX_MSG_SIZE:
+                    client_socket.sendall(b"ERROR: Message exceeds maximum payload limits.")
+                    continue
+                
+                if message.startswith("/pm "):
+                    parts = message.split(" ", 2)
+                    if len(parts) >= 3:
+                        target_user = parts[1]
+                        pm_content = parts[2]
+                        target_socket = None
+                        
+                        with lock:
+                            for sock, name in active_clients.items():
+                                if name == target_user:
+                                    target_socket = sock
+                                    break
+                        
+                        if target_socket:
+                            try:
+                                target_socket.sendall(f"[{username} (PM)]: {pm_content}\n".encode('utf-8'))
+                                client_socket.sendall(f"[You (PM to {target_user})]: {pm_content}\n".encode('utf-8'))
+                            except Exception:
+                                client_socket.sendall(b"ERROR: Failed to deliver private message.\n")
+                        else:
+                            client_socket.sendall(f"ERROR: User '{target_user}' is offline.\n".encode('utf-8'))
+                    else:
+                        client_socket.sendall(b"ERROR: Invalid PM format. Use /pm <username> <message>\n")
+                else:
+                    broadcast(f"[{username}]: {message}", client_socket)
+                    
+            except socket.timeout:
+                if time.time() - last_active > TIMEOUT_LIMIT:
+                    try:
+                        client_socket.sendall(b"ERROR: Session timed out due to inactivity.")
+                        client_socket.shutdown(socket.SHUT_WR)
+                    except Exception:
+                        pass
+                    log_event(f"SESSION: User '{username}' disconnected due to inactivity.")
+                    break
+
+    except Exception as e:
+        log_event(f"ERROR: Connection exception occurred with {ip}. Details: {e}")
+    finally:
+        with lock:
+            if client_socket in active_clients:
+                del active_clients[client_socket]
+            if username in active_usernames:
+                active_usernames.remove(username)
+        
+        try:
+            client_socket.close()
+        except Exception:
+            pass
+            
+        if authenticated:
+            broadcast(f"\n[SYSTEM]: {username} has left the workspace.")
+
+def main():
+    load_user_database()
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind(('0.0.0.0', PORT))
+    server.listen(5)
+    print(f"[SYSTEM READY] TCP Server running securely on 0.0.0.0:{PORT}")
+
+    try:
+        while True:
+            client_socket, client_address = server.accept()
+            threading.Thread(target=handle_client, args=(client_socket, client_address), daemon=True).start()
+    except KeyboardInterrupt:
+        print("\n[SYSTEM] Server shutting down.")
+    finally:
+        server.close()
 
 if __name__ == "__main__":
-    start_server()
+    main()
