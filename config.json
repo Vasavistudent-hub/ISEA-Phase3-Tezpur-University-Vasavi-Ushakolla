@@ -1,0 +1,21 @@
+{
+    "server": {
+        "host": "0.0.0.0",
+        "port": 5000,
+        "backlog": 15,
+        "timeout": 300.0,
+        "max_workers": 20
+    },
+    "security": {
+        "max_msg_size": 1024,
+        "block_duration": 30.0,
+        "max_failed_attempts": 3
+    },
+    "client": {
+        "default_host": "127.0.0.1",
+        "default_port": 5000,
+        "reconnect_attempts": 3,
+        "reconnect_delay": 2,
+        "buffer_size": 1024
+    }
+}
