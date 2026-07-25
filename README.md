@@ -98,7 +98,3 @@ python3 server.py
 python3 client_gui.py
 
 ```
-
-```
-
-```
