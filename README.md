@@ -1,4 +1,3 @@
-```markdown
 # Assignment 8: Application Optimization, Scalability, and Reliability
 
 **Program:** ISEA Phase III Networking Internship   
